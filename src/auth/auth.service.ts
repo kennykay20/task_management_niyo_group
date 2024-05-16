@@ -37,7 +37,7 @@ export class AuthService {
       }
 
       if (!isUser.isDelete) {
-        token = await this.generateAuthToken(email);
+        token = await this.generateAuthToken(email, isUser.id);
       } else {
         throw new HttpException(
           'Please activate your account',
@@ -56,12 +56,19 @@ export class AuthService {
 
   generateAuthToken = async (
     email: string,
+    userId: string,
   ): Promise<{ access_token: string }> => {
-    const payloadToken = { sub: email, username: email };
+    const payloadToken = { username: email, userId };
     return { access_token: await this.jwtService.signAsync(payloadToken) };
   };
 
   generateOtp() {
     return Math.floor(Math.random() * (999999 - 111111) + 111111).toString();
   }
+
+  verifyToken = async (token: string, secret: string) => {
+    return await this.jwtService.verifyAsync(token, {
+      secret,
+    });
+  };
 }

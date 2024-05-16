@@ -8,11 +8,11 @@ import {
 import { UserService } from './user.service';
 import { UserCreateDto } from './dtos/create.dto';
 
-@Controller('v1/users')
+@Controller('v1/users/')
 export class UserController {
   constructor(private readonly userSvc: UserService) {}
 
-  @Post()
+  @Post('register')
   @UsePipes(new ValidationPipe())
   CreateUser(@Body() createUserDto: UserCreateDto) {
     return this.userSvc.createUser(createUserDto);

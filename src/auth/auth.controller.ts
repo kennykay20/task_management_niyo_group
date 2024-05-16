@@ -12,7 +12,7 @@ import { LoginDto } from './dtos/login.dto';
 export class AuthController {
   constructor(private readonly authSvc: AuthService) {}
 
-  @Post()
+  @Post('login')
   @UsePipes(new ValidationPipe())
   LoginUser(@Body() login: LoginDto) {
     return this.authSvc.loginUser(login);

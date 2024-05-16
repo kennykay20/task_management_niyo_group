@@ -1,4 +1,5 @@
 import { DocumentBuilder } from '@nestjs/swagger';
+import { Response } from 'express';
 
 const EMAIL_TOKEN_EXPIRATION_MINUTE = 10;
 const EMAIL_TOKEN_EXPIRATION_HOUR = 24;
@@ -27,3 +28,33 @@ export const options = new DocumentBuilder()
   .addTag('task')
   .addBearerAuth()
   .build();
+
+export const success = (res: Response, data) => {
+  let resp = null;
+  try {
+    resp = JSON.parse(JSON.stringify(data));
+  } catch (e) {
+    resp = data;
+  }
+  return res.status(200).json(resp);
+};
+
+export const error = (
+  res,
+  status: number,
+  eMsgTitle: string,
+  message: string,
+) => {
+  return res.status(status).json({
+    error: eMsgTitle,
+    code: status,
+    message,
+    details: [
+      {
+        type_url: `${res.req.headers['x-forwarded-proto']}://${res.req.headers.host}`,
+        value: res.req._parsedUrl.path,
+        referer: res.req.headers.referer,
+      },
+    ],
+  });
+};

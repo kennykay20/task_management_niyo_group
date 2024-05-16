@@ -1,11 +1,12 @@
 
-
 ## Description
 
 A Task Management REST-API built with Nestjs framework, Typescript and TypeOrm: is the most mature Object Relational Mapper (ORM) available for TypeScript. Since it's written in TypeScript, it integrates well with the Nest framework
 
-## Installation
+## Steps 
 
+## Installation
+Before you run this application after you have pull or cloned it from the github, run the 'npm install or npm i' to install the necessary packages and display the node_modules
 ```bash
 $ npm install
 ```

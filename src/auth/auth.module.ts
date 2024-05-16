@@ -11,10 +11,11 @@ import { config } from '../config';
     JwtModule.register({
       global: true,
       secret: config.Secret,
-      signOptions: { expiresIn: `${config.jwtexpire}` },
+      signOptions: { expiresIn: `${config.jwtexpire}s` },
     }),
   ],
   providers: [AuthService],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}
