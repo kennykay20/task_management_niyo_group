@@ -58,3 +58,8 @@ export const error = (
     ],
   });
 };
+
+export interface userInfo {
+  id: string;
+  email: string;
+}

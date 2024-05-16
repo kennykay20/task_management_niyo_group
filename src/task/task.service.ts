@@ -11,8 +11,8 @@ import { Task } from './models/task.model';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/models/user.model';
 import { TaskStatus } from 'src/utils';
+import { Request } from 'express';
 
 @Injectable()
 export class TaskService {
@@ -23,11 +23,11 @@ export class TaskService {
     private readonly userSrv: UserService,
   ) {}
 
-  async createTask(createData: TaskCreateDto, user: User) {
+  async createTask(createData: TaskCreateDto, req: Request) {
     const { title, description } = createData;
-
+    const user = req.headers['user'].toString();
     try {
-      const userData = await this.userSrv.getUserById(user.id);
+      const userData = await this.userSrv.getUserById(user['id']);
       if (!userData) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
@@ -36,7 +36,7 @@ export class TaskService {
       task.title = title;
       task.description = description;
       task.status = TaskStatus.OPEN;
-      task.user = user;
+      task.user = userData;
 
       const saveTask = await this.taskRepo.save(task);
       delete saveTask.user;
@@ -50,10 +50,11 @@ export class TaskService {
     return await this.taskRepo.find();
   }
 
-  async getTaskById(id: string, user: User): Promise<Task | null> {
+  async getTaskById(id: string, req: Request): Promise<Task | null> {
     try {
+      const user = req.headers['user'].toString();
       const result = await this.taskRepo.findOne({
-        where: { id, isDeleted: false, userId: user.id },
+        where: { id, isDeleted: false, userId: user['id'] },
       });
       if (!result) {
         throw new HttpException(
@@ -67,9 +68,10 @@ export class TaskService {
     }
   }
 
-  async updateTaskById(id: string, status: TaskStatus, user: User) {
+  async updateTaskById(id: string, status: TaskStatus, req: Request) {
     try {
-      const result = await this.getTaskById(id, user);
+      const user = req.headers['user'].toString();
+      const result = await this.getTaskById(id, user['id']);
       if (!result) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
@@ -80,10 +82,11 @@ export class TaskService {
     }
   }
 
-  async deleteTaskById(id: string, user: User) {
+  async deleteTaskById(id: string, req: Request) {
     try {
+      const user = req.headers['user'].toString();
       const result = await this.taskRepo.findOne({
-        where: { id, isDeleted: false, userId: user.id },
+        where: { id, isDeleted: false, userId: user['id'] },
       });
       if (!result) {
         throw new HttpException(

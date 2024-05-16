@@ -24,7 +24,6 @@ export class AuthenticationMiddleware {
     const secret = config.Secret;
     let token = '';
     console.log('originUrl', req.originalUrl);
-    // TODO: Authenticate the request
     const headers = req.headers;
     if (headers['authorization'] === undefined) {
       return error(
@@ -46,10 +45,7 @@ export class AuthenticationMiddleware {
     }
 
     try {
-      const { username, userId } = await this.authSvc.verifyToken(
-        token,
-        secret,
-      );
+      const { email, userId } = await this.authSvc.verifyToken(token, secret);
       let user = await this.userSvc.getUserById(userId);
       user = typeof user === 'string' ? JSON.parse(user) : user;
 
@@ -59,7 +55,7 @@ export class AuthenticationMiddleware {
 
       req.headers['user'] = JSON.stringify({
         id: user.id,
-        email: username,
+        email,
       });
     } catch (err) {
       Logger.log(err);

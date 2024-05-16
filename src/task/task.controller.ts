@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Req,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,8 +15,7 @@ import { TaskService } from './task.service';
 import { TaskCreateDto } from './dtos/create.dto';
 import { TaskStatusValidationPipe } from './pipes/task.pipe';
 import { TaskStatus } from 'src/utils';
-import { GetUser } from 'src/user/getuser.decorator';
-import { User } from 'src/user/models/user.model';
+import { Request } from 'express';
 
 @Controller('v1/tasks')
 export class TaskController {
@@ -23,13 +23,13 @@ export class TaskController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  CreateTask(@Body() taskCreateDto: TaskCreateDto, @GetUser() user: User) {
-    return this.taskSvc.createTask(taskCreateDto, user);
+  CreateTask(@Body() taskCreateDto: TaskCreateDto, @Req() req: Request) {
+    return this.taskSvc.createTask(taskCreateDto, req);
   }
 
   @Get(':id')
-  GetTask(@Param('id') id: string, @GetUser() user: User) {
-    return this.taskSvc.getTaskById(id, user);
+  GetTask(@Param('id') id: string, @Req() req: Request) {
+    return this.taskSvc.getTaskById(id, req);
   }
 
   @Get()
@@ -41,13 +41,13 @@ export class TaskController {
   UpdateTask(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,
-    @GetUser() user: User,
+    @Req() req: Request,
   ) {
-    return this.taskSvc.updateTaskById(id, status, user);
+    return this.taskSvc.updateTaskById(id, status, req);
   }
 
   @Delete(':id')
-  DeleteTask(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
-    return this.taskSvc.deleteTaskById(id, user);
+  DeleteTask(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
+    return this.taskSvc.deleteTaskById(id, req);
   }
 }
