@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { TaskCreateDto } from './dtos/create.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './models/task.model';
@@ -13,14 +7,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserService } from 'src/user/user.service';
 import { TaskStatus } from 'src/utils';
 import { Request } from 'express';
+import { SocketService } from 'src/gateway/socket.service';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
-    @Inject(UserService)
     private readonly userSrv: UserService,
+    private readonly socketSvc: SocketService,
   ) {}
 
   async createTask(createData: TaskCreateDto, req: Request) {
@@ -40,6 +35,7 @@ export class TaskService {
 
       const saveTask = await this.taskRepo.save(task);
       delete saveTask.user;
+      this.socketSvc.socket.emit('message', saveTask);
       return saveTask;
     } catch (error) {
       Logger.log(error);

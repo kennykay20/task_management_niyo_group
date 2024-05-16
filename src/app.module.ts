@@ -11,9 +11,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthenticationMiddleware } from './middlewares/auth.middleware';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, AuthModule, TaskModule],
+  imports: [DatabaseModule, UserModule, AuthModule, TaskModule, GatewayModule],
   controllers: [AppController],
   providers: [AppService],
 })
