@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserService } from 'src/user/user.service';
 import { TaskStatus } from 'src/utils';
 import { Request } from 'express';
-import { SocketService } from 'src/gateway/socket.service';
+import { EventGatewayService } from 'src/gateway/gateway.service';
 
 @Injectable()
 export class TaskService {
@@ -15,7 +15,7 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
     private readonly userSrv: UserService,
-    private readonly socketSvc: SocketService,
+    private eventGateway: EventGatewayService,
   ) {}
 
   async createTask(createData: TaskCreateDto, req: Request) {
@@ -35,7 +35,7 @@ export class TaskService {
 
       const saveTask = await this.taskRepo.save(task);
       delete saveTask.user;
-      this.socketSvc.socket.emit('message', saveTask);
+      this.eventGateway.sendMessage(saveTask);
       return saveTask;
     } catch (error) {
       Logger.log(error);
@@ -66,19 +66,19 @@ export class TaskService {
 
   async updateTaskById(id: string, status: TaskStatus, req: Request) {
     try {
-      const user = req.headers['user'].toString();
-      const result = await this.getTaskById(id, user['id']);
+      const result = await this.getTaskById(id, req);
       if (!result) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       result.status = status;
-      return await this.taskRepo.save({ id, result });
+      return await this.taskRepo.update(id, result);
     } catch (error) {
       Logger.log(error);
     }
   }
 
   async deleteTaskById(id: string, req: Request) {
+    console.log(`${id} inside the delete task`);
     try {
       const user = req.headers['user'].toString();
       const result = await this.taskRepo.findOne({
@@ -91,7 +91,7 @@ export class TaskService {
         );
       }
       result.isDeleted = true;
-      return await this.taskRepo.save({ id, result });
+      return await this.taskRepo.update(id, result);
     } catch (error) {
       Logger.log(error);
     }

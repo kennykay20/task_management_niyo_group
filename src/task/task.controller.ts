@@ -37,7 +37,7 @@ export class TaskController {
     return this.taskSvc.getAllTask();
   }
 
-  @Patch('/:id/status')
+  @Patch(':id')
   UpdateTask(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,

@@ -20,10 +20,10 @@ export class User extends BaseEntity {
   @Column({ length: 500 })
   lastname: string;
 
-  @Column({ default: null, nullable: true })
+  @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column({ type: 'text', default: null, nullable: true })
+  @Column({ type: 'text', nullable: false })
   password: string;
 
   @Column({ default: false })
@@ -38,9 +38,9 @@ export class User extends BaseEntity {
   @OneToMany(() => Task, (task) => task.userId)
   tasks: Task[];
 
-  @CreateDateColumn({ default: null, type: 'timestamp with time zone' })
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date;
 }

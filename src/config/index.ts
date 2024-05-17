@@ -30,7 +30,11 @@ if (error) {
   throw new Error(`config validation error ${error.message}`);
 }
 
+const nonProdEnvironments = ['development', 'dev', 'staging'];
+
 export const config = {
+  isDevelopment: nonProdEnvironments.includes(envVal.NODE_ENV) ? true : false,
+  isLocahost: envVal.NODE_ENV === 'development' || 'dev' ? true : false,
   port: {
     HTTP_PORT: envVal.HTTP_PORT,
   },

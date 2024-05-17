@@ -8,8 +8,3 @@ export function isValidPassword(password: string): boolean {
   const re = /^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d\w\W]{5,}$/;
   return re.test(password);
 }
-
-export function checkPassword(password: string): boolean {
-  const re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{5,}$/;
-  return re.test(password);
-}
